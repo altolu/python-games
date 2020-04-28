@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from enum import Enum
+import operator
 
 class ConnectFour:
 
@@ -31,30 +32,84 @@ class ConnectFour:
         player_red_turn = True
         while True:
             token = self.Token.RED if player_red_turn else self.Token.BLUE
-            player = '1\'s 🔥' if player_red_turn else '2\'s 🧊'
+            player = '🔥1🔥' if player_red_turn else '🧊2🧊'
             # Get current player's move
             while True:
-                c_input = input(f'Player {player} move: ')
+                c_input = input(f'Player {player}\'s move: ')
                 block_for_token = -1
                 col = int(c_input) if c_input and c_input.isdigit() else None
                 if col is None or col < 1 or col > 7:
+                    # Invalid: NaN
                     print('You must enter in a single digit between 1 and 7')
                 else:
                     col -= 1 # Translate user's col 1 to board col 0
                     block_for_token = self.next_empty_block(col)
                     if block_for_token == -1:
+                        # Invalid: Block unavailable
                         print('That column is already full. Try another!')
                     else:
+                        # Valid move
                         moves_count += 1
                         player_red_turn = not player_red_turn
                         break # End current player's move
             self.grid[col][block_for_token] = token
             self.print_board()
+            # Check for win
+            did_win = self.connected_4_exists(col, block_for_token)
+            if did_win:
+                print('🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆')
+                print(f' Congratulations Player {player}! You won!')
+                print('🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆')
+                break
             if moves_count >= self.columns * self.rows:
                 print('All game spaces are filled. Game over!')
                 break
-            # TODO: break when no more empty blocks
 
+    def connected_4_exists(self, column, row):
+        token = self.grid[column][row]
+        count = 0
+        add = operator.add
+        mul = operator.mul
+        sub = operator.sub
+        # Left
+        if self.streak_of_four(column, sub, row, mul, token):
+            return True
+        # Right
+        if self.streak_of_four(column, add, row, mul, token):
+            return True
+        # Down
+        if self.streak_of_four(column, mul, row, sub, token):
+            return True
+        # Diagonal left down
+        if self.streak_of_four(column, sub, row, sub, token):
+            return True
+        # Diagonal right down
+        if self.streak_of_four(column, add, row, sub, token):
+            return True
+        return False
+
+    def streak_of_four(self, column, c_func, row, r_func, token):
+        is_streak = False
+        for i in range(3):
+            next_col = c_func(column, 1)
+            next_row = r_func(row, 1)
+            is_match = self.neighbor_block_matches(next_col, next_row, token)
+            if not is_match:
+                break
+            if i == 2: # 3rd token checked besides original, aka 4 streak
+                is_streak = True
+                break
+            column = next_col
+            row = next_row
+
+        return is_streak
+
+    def neighbor_block_matches(self, column, row, token):
+        is_match = False
+        if column >= 0 and column < self.columns and row >= 0 and row < self.rows:
+            if self.grid[column][row] == token:
+                is_match = True
+        return is_match
 
     def next_empty_block(self, column):
         """Returns lowest empty block for given column or -1 if full
