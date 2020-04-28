@@ -23,21 +23,30 @@ class ConnectFour:
         print('\n')
         self.print_board()
 
+    def gameplay(self):
         col = 0
+        player_red_turn = True
+
         while True:
-            col_selected = input('Player 1\'s column: ')
-            col = int(col_selected) if col_selected and col_selected.isdigit() else None
-            if col is None or col < 1 or col > 7:
-                print('You must enter in a single digit between 1 and 7')
-            else:
-                # print(f'You selected {col}')
-                break
-        col -= 1
-        self.grid[col][0] = 'RI'
-        self.print_board()
 
+            token = "RF" if player_red_turn else "BI"
+            player = '1\'s 🔥' if player_red_turn else '2\'s 🧊'
+            # Get current player's move
+            while True:
+                c_input = input(f'Player {player} move: ')
+                col = int(c_input) if c_input and c_input.isdigit() else None
+                if col is None or col < 1 or col > 7:
+                    print('You must enter in a single digit between 1 and 7')
+                else:
+                    player_red_turn = not player_red_turn
+                    break # End current player's move
+            col -= 1 # Translate user's col 1 to board col 0
+            col_of_grid = self.grid[col]
+            tokens_in_col = len([t for t in col_of_grid if t is not None])
+            self.grid[col][tokens_in_col] = token
+            self.print_board()
 
-
+            #TODO break when no more empty blocks
 
     def get_content_row(self, row):
         new_row = ''
@@ -88,3 +97,4 @@ if __name__ == '__main__':
     game = ConnectFour()
     game.init_moves_grid()
     game.welcome_player()
+    game.gameplay()
