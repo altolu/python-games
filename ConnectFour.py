@@ -17,9 +17,11 @@ class ConnectFour:
     def welcome_player(self):
         c = 'blue'
         print('\n')
-        print('Welcome Player 1! You are color {0}.'.format(self.player_color))
-        print(f'Red is fire {self.red_fire} and Blue is ice {self.blue_ice}')
+        print(f'Welcome! \nPlayer 1 (Red) is fire {self.red_fire} and Player 2 (Blue) is ice {self.blue_ice}.')
+        print('The first to connect 4 tokens of their color wins.')
+        print('Enter a column # (1-7) to drop your token.')
         print('\n')
+        self.print_board()
 
 
     def get_content_row(self, row):
@@ -51,10 +53,12 @@ class ConnectFour:
     def print_board(self):
         board = ""
         # Divider Rows
-        top_row = '⟔-------------------------------------'
+        label_row = '   1    2    3    4    5    6    7   '
+        top_row = '⟔------------------------------------'
         separator_row = '||----------------------------------||'
         bottom_row = '-------------------------------------⟓'
 
+        board += label_row + '\n'
         board += top_row + '\n'
         for row in range(self.rows):
             reverse_counter = self.rows - (row+1)
@@ -62,19 +66,10 @@ class ConnectFour:
             if row < self.rows-1:
                 board += separator_row + '\n'
         board += bottom_row + '\n'
-
         print(board)
 
 
 if __name__ == '__main__':
     game = ConnectFour()
     game.init_moves_grid()
-    print(f'Grid: {game.grid}')
-
-    print('Adding some pieces...')
-    game.grid[0][0] = "RF"
-    game.grid[0][1] = "BI"
-
-    print(f'Grid: {game.grid}')
     game.welcome_player()
-    game.print_board()
