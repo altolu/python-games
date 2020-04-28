@@ -38,11 +38,19 @@ class ConnectFour:
 
         row_data = []
         for col in self.grid:
-            row_data.append(col[row])
+            datum = col[row]
+            if datum is None:
+                row_data.append(None)
+            elif datum%2==0:
+                row_data.append('BI')
+            else:
+                row_data.append('RF')
 
         new_row += outer_wall
         for d in row_data:
-            if d%2 == 0:
+            if d is None:
+                new_row += empty_block
+            elif d == 'BI':
                 new_row += ice_block
             else:
                 new_row += fire_block
@@ -118,6 +126,10 @@ class ConnectFour:
 if __name__ == '__main__':
     game = ConnectFour()
     game.init_pieces_array()
+    print(f'Grid: {game.grid}')
+    print('Removing some pieces...')
+    game.grid[0][0] = None
+
     print(f'Grid: {game.grid}')
     game.welcome_player()
     game.print_board()
