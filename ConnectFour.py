@@ -23,6 +23,21 @@ class ConnectFour:
         print('\n')
         self.print_board()
 
+        col = 0
+        while True:
+            col_selected = input('Player 1\'s column: ')
+            col = int(col_selected) if col_selected and col_selected.isdigit() else None
+            if col is None or col < 1 or col > 7:
+                print('You must enter in a single digit between 1 and 7')
+            else:
+                # print(f'You selected {col}')
+                break
+        col -= 1
+        self.grid[col][0] = 'RI'
+        self.print_board()
+
+
+
 
     def get_content_row(self, row):
         new_row = ''
