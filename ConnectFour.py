@@ -10,14 +10,9 @@ class ConnectFour:
         self.rows = 6
         self.columns = 7
         self.grid = []
-        #pieces_on_board = [[], []]
 
-    def init_pieces_array(self):
-        counter = 0
-        for _ in range(self.columns):
-            new_col = [counter+num for num in range(1, self.rows+1)]
-            counter += self.rows
-            self.grid.append(new_col)
+    def init_moves_grid(self):
+        self.grid = [[None] * self.rows for col in range(self.columns)]
 
     def welcome_player(self):
         c = 'blue'
@@ -38,13 +33,7 @@ class ConnectFour:
 
         row_data = []
         for col in self.grid:
-            datum = col[row]
-            if datum is None:
-                row_data.append(None)
-            elif datum%2==0:
-                row_data.append('BI')
-            else:
-                row_data.append('RF')
+            row_data.append(col[row])
 
         new_row += outer_wall
         for d in row_data:
@@ -66,11 +55,8 @@ class ConnectFour:
         separator_row = '||----------------------------------||'
         bottom_row = '-------------------------------------⟓'
 
-        temp_content_row = '||    |    |    |    |    |    |    ||'
-
         board += top_row + '\n'
         for row in range(self.rows):
-            # board += temp_content_row + '\n'
             reverse_counter = self.rows - (row+1)
             board += self.get_content_row(reverse_counter) + '\n'
             if row < self.rows-1:
@@ -80,57 +66,15 @@ class ConnectFour:
         print(board)
 
 
-
-        # print('\n' + """
-        # ⟔-------------------------------------
-        # || 🔥 | 🔥 | 🔥 | 🔥 | 🔥 | 🔥 | 🔥 ||
-        # ||----------------------------------||
-        # || 🧊 | 🧊 | 🧊 | 🧊 | 🧊 | 🧊 | 🧊 ||
-        # ||----------------------------------||
-        # ||    | 🧊 | 🧊 | 🧊 | 🧊 | 🧊 | 🧊 ||
-        # -------------------------------------⟓
-        # """)
-
-
-
-
-        # horizontal_div = '----' # plus 1 '-' above an inner wall
-        # outer_wall = '||'
-        # inner_wall = '|'
-        # top_left_corner = '⟔-'
-        # bottom_right_corner = '-⟓'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
     game = ConnectFour()
-    game.init_pieces_array()
+    game.init_moves_grid()
     print(f'Grid: {game.grid}')
-    print('Removing some pieces...')
-    game.grid[0][0] = None
+
+    print('Adding some pieces...')
+    game.grid[0][0] = "RF"
+    game.grid[0][1] = "BI"
 
     print(f'Grid: {game.grid}')
     game.welcome_player()
     game.print_board()
-    game.init_pieces_array()
