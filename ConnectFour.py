@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from enum import Enum
 
 class ConnectFour:
 
@@ -10,6 +11,8 @@ class ConnectFour:
         self.rows = 6
         self.columns = 7
         self.grid = []
+        self.Token = Enum('Token', 'RED BLUE')
+
 
     def init_moves_grid(self):
         self.grid = [[None] * self.rows for col in range(self.columns)]
@@ -24,29 +27,45 @@ class ConnectFour:
         self.print_board()
 
     def gameplay(self):
-        col = 0
+        moves_count = 0
         player_red_turn = True
-
         while True:
-
-            token = "RF" if player_red_turn else "BI"
+            token = self.Token.RED if player_red_turn else self.Token.BLUE
             player = '1\'s 🔥' if player_red_turn else '2\'s 🧊'
             # Get current player's move
             while True:
                 c_input = input(f'Player {player} move: ')
+                block_for_token = -1
                 col = int(c_input) if c_input and c_input.isdigit() else None
                 if col is None or col < 1 or col > 7:
                     print('You must enter in a single digit between 1 and 7')
                 else:
-                    player_red_turn = not player_red_turn
-                    break # End current player's move
-            col -= 1 # Translate user's col 1 to board col 0
-            col_of_grid = self.grid[col]
-            tokens_in_col = len([t for t in col_of_grid if t is not None])
-            self.grid[col][tokens_in_col] = token
+                    col -= 1 # Translate user's col 1 to board col 0
+                    block_for_token = self.next_empty_block(col)
+                    if block_for_token == -1:
+                        print('That column is already full. Try another!')
+                    else:
+                        moves_count += 1
+                        player_red_turn = not player_red_turn
+                        break # End current player's move
+            self.grid[col][block_for_token] = token
             self.print_board()
+            if moves_count >= self.columns * self.rows:
+                print('All game spaces are filled. Game over!')
+                break
+            # TODO: break when no more empty blocks
 
-            #TODO break when no more empty blocks
+
+    def next_empty_block(self, column):
+        """Returns lowest empty block for given column or -1 if full
+        Lists in grid are columns, starting from bottom left of game board
+        Imagine a vertical board where tokens are stacked in each column
+        """
+        empty_block = -1
+        tokens_in_col = len([t for t in self.grid[column] if t is not None])
+        if tokens_in_col < self.rows:
+            empty_block = tokens_in_col
+        return empty_block
 
     def get_content_row(self, row):
         new_row = ''
@@ -65,7 +84,7 @@ class ConnectFour:
         for d in row_data:
             if d is None:
                 new_row += empty_block
-            elif d == 'BI':
+            elif d == self.Token.BLUE:
                 new_row += ice_block
             else:
                 new_row += fire_block
