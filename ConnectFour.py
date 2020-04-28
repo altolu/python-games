@@ -14,14 +14,17 @@ class ConnectFour:
         self.grid = []
         self.Token = Enum('Token', 'RED BLUE')
 
-
     def init_moves_grid(self):
+        """ Initialze empty multi-dim array.
+        Arrays are columns, containing tokens placed in order, 0th is first.
+        If the very first move was in column 1, the token would be in [0][0].
+        """
         self.grid = [[None] * self.rows for col in range(self.columns)]
 
     def welcome_player(self):
-        c = 'blue'
         print('\n')
-        print(f'Welcome! \nPlayer 1 (Red) is fire {self.red_fire} and Player 2 (Blue) is ice {self.blue_ice}.')
+        print(f'Welcome! \nPlayer 1 (Red) is fire {self.red_fire} and Player 2',
+            ' (Blue) is ice {self.blue_ice}.')
         print('The first to connect 4 tokens of their color wins.')
         print('Enter a column # (1-7) to drop your token.')
         print('\n')
@@ -65,7 +68,19 @@ class ConnectFour:
                 print('All game spaces are filled. Game over!')
                 break
 
+    def next_empty_block(self, column):
+        """Returns lowest empty block for given column or -1 if full
+        Lists in grid are columns, starting from bottom left of game board
+        Imagine a vertical board where tokens are stacked in each column
+        """
+        empty_block = -1
+        tokens_in_col = len([t for t in self.grid[column] if t is not None])
+        if tokens_in_col < self.rows:
+            empty_block = tokens_in_col
+        return empty_block
+
     def connected_4_exists(self, column, row):
+        """Check if current player completed a streak of 4 in any direction"""
         token = self.grid[column][row]
         count = 0
         add = operator.add
@@ -89,6 +104,7 @@ class ConnectFour:
         return False
 
     def streak_of_four(self, column, c_func, row, r_func, token):
+        """Check for a streak of four in one direction matching given token"""
         is_streak = False
         for i in range(3):
             next_col = c_func(column, 1)
@@ -105,24 +121,16 @@ class ConnectFour:
         return is_streak
 
     def neighbor_block_matches(self, column, row, token):
+        """Check if a given neighbor block contains the desired token"""
         is_match = False
-        if column >= 0 and column < self.columns and row >= 0 and row < self.rows:
+        if column >= 0 and column < self.columns and \
+            row >= 0 and row < self.rows:
             if self.grid[column][row] == token:
                 is_match = True
         return is_match
 
-    def next_empty_block(self, column):
-        """Returns lowest empty block for given column or -1 if full
-        Lists in grid are columns, starting from bottom left of game board
-        Imagine a vertical board where tokens are stacked in each column
-        """
-        empty_block = -1
-        tokens_in_col = len([t for t in self.grid[column] if t is not None])
-        if tokens_in_col < self.rows:
-            empty_block = tokens_in_col
-        return empty_block
-
     def get_content_row(self, row):
+        """Translate moves grid history into emoji visuals for printing board"""
         new_row = ''
         # Token Rows
         empty_block = '    '
@@ -149,15 +157,31 @@ class ConnectFour:
         return new_row
 
     def print_board(self):
+        """
+           1    2    3    4    5    6    7
+        ⟔------------------------------------
+        || 🧊 | 🔥 | 🧊 | 🔥 | 🧊 | 🔥 | 🧊 ||
+        ||----------------------------------||
+        || 🔥 | 🧊 | 🔥 | 🧊 | 🔥 | 🧊 | 🔥 ||
+        ||----------------------------------||
+        || 🧊 | 🔥 | 🧊 | 🔥 | 🧊 | 🔥 | 🧊 ||
+        ||----------------------------------||
+        || 🔥 | 🧊 | 🔥 | 🧊 | 🔥 | 🧊 | 🔥 ||
+        ||----------------------------------||
+        || 🧊 | 🔥 | 🧊 | 🔥 | 🧊 | 🔥 | 🧊 ||
+        ||----------------------------------||
+        || 🔥 | 🧊 | 🔥 | 🧊 | 🔥 | 🧊 | 🔥 ||
+        -------------------------------------⟓
+        """
         board = ""
         # Divider Rows
         label_row = '   1    2    3    4    5    6    7   '
         top_row = '⟔------------------------------------'
         separator_row = '||----------------------------------||'
         bottom_row = '-------------------------------------⟓'
-
         board += label_row + '\n'
         board += top_row + '\n'
+        # Content Rows
         for row in range(self.rows):
             reverse_counter = self.rows - (row+1)
             board += self.get_content_row(reverse_counter) + '\n'
@@ -165,7 +189,6 @@ class ConnectFour:
                 board += separator_row + '\n'
         board += bottom_row + '\n'
         print(board)
-
 
 if __name__ == '__main__':
     game = ConnectFour()
