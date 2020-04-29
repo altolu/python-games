@@ -24,7 +24,7 @@ class ConnectFour:
     def welcome_player(self):
         print('\n')
         print(f'Welcome! \nPlayer 1 (Red) is fire {self.red_fire} and Player 2',
-            ' (Blue) is ice {self.blue_ice}.')
+            f'(Blue) is ice {self.blue_ice}.')
         print('The first to connect 4 tokens of their color wins.')
         print('Enter a column # (1-7) to drop your token.')
         print('\n')
